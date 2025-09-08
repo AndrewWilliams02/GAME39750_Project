@@ -67,7 +67,7 @@ public class player : MonoBehaviour
     public void Restore()
     {
         enemyController.GetComponent<enemy>().damageMulti = 0.5f;
-        damage = Random.Range(20, 30);
+        damage = Random.Range(10, 35);
         health += damage;
         print(this.gameObject.name + " restored themself, reducing damage taken by 50% this turn and healing " + damage + " HP.");
 
