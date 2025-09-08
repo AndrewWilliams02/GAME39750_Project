@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class enemy : MonoBehaviour
+{
+    public List<float> health = new List<float>();
+    public GameObject[] enemies = new GameObject[2];
+    public Slider[] healthBars = new Slider [2];
+
+    float damage;
+    public float damageMulti = 1;
+
+    public bool turnsComplete = true;
+    public GameObject player;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            health.Add((int)Random.Range(50, 65));
+            healthBars[i].maxValue = health[i];
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        UpdateHealth();
+
+        if (!turnsComplete)
+        {
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                damage = Random.Range(10, 15) * damageMulti;
+                player.GetComponent<player>().health -= damage;
+
+                print(enemies[i].name + " dealt " + damage + " damage to the player.");
+            }
+
+            damageMulti = 1;
+            turnsComplete = true;
+            player.GetComponent<player>().turnComplete = false;
+            gameState.ActivateUI();
+        }
+
+        DeathCheck();
+    }
+
+    void UpdateHealth()
+    {
+        for (int i = 0; i < health.Count; i++)
+        {
+            healthBars[i].value = health[i];
+        }
+    }
+
+    void DeathCheck()
+    {
+        for (int i = 0; i < health.Count; i++)
+        {
+            if (health[i] <= 0)
+            {
+                enemies[i].gameObject.SetActive(false);
+                healthBars[i].gameObject.SetActive(false);
+            }
+        }
+    }
+}
