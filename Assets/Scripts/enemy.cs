@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class enemy : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     public List<float> health = new List<float>();
     public GameObject[] enemies = new GameObject[2];
@@ -36,15 +36,15 @@ public class enemy : MonoBehaviour
             for (int i = 0; i < enemies.Length; i++)
             {
                 damage = Random.Range(10, 15) * damageMulti;
-                player.GetComponent<player>().health -= damage;
+                player.GetComponent<Player>().health -= damage;
 
                 print(enemies[i].name + " dealt " + damage + " damage to the player.");
             }
 
             damageMulti = 1;
             turnsComplete = true;
-            player.GetComponent<player>().turnComplete = false;
-            gameState.ActivateUI();
+            player.GetComponent<Player>().turnComplete = false;
+            GameState.ActivateUI();
         }
 
         DeathCheck();

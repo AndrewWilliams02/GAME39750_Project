@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class player : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public float health = 100;
     float damage;
@@ -12,6 +12,7 @@ public class player : MonoBehaviour
     public GameObject enemyController;
     public GameObject selection;
     public List<GameObject> enemies = new List<GameObject>();
+    public List<float> enemyHealth = new List<float>();
     public Slider healthBar;
 
     public bool turnComplete = false;
@@ -21,9 +22,13 @@ public class player : MonoBehaviour
     void Start()
     {
         healthBar.maxValue = health;
-        for (int i = 0; i < enemyController.GetComponent<enemy>().enemies.Length; i++)
+        for (int i = 0; i < enemyController.GetComponent<Enemy>().enemies.Length; i++)
         {
-            enemies.Add(enemyController.GetComponent<enemy>().enemies[i]);
+            enemies.Add(enemyController.GetComponent<Enemy>().enemies[i]);
+        }
+        for (int i = 0; i < enemyController.GetComponent<Enemy>().health.Count; i++)
+        {
+            enemyHealth.Add(enemyController.GetComponent<Enemy>().health[i]);
         }
         target = 0;
     }
@@ -36,7 +41,7 @@ public class player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            for (int i = 0; i < enemyController.GetComponent<enemy>().enemies.Length; i++)
+            for (int i = 0; i < enemies.Count; i++)
             {
                 Collider2D enemyCollider = enemies[i].GetComponent<BoxCollider2D>();
 
@@ -66,37 +71,37 @@ public class player : MonoBehaviour
 
     public void Restore()
     {
-        enemyController.GetComponent<enemy>().damageMulti = 0.5f;
+        enemyController.GetComponent<Enemy>().damageMulti = 0.5f;
         damage = Random.Range(10, 35);
         health += damage;
         print(this.gameObject.name + " restored themself, reducing damage taken by 50% this turn and healing " + damage + " HP.");
 
         turnComplete = true;
-        enemyController.GetComponent<enemy>().turnsComplete = false;
-        gameState.HideUI();
+        enemyController.GetComponent<Enemy>().turnsComplete = false;
+        GameState.HideUI();
     }
 
     public void NormalAttack()
     {
         damage = Random.Range(15, 20);
-        enemyController.GetComponent<enemy>().health[target] -= damage;
+        enemyHealth[target] -= damage;
         print(this.gameObject.name + " dealt " + damage + " damage to " + enemies[target].name + ".");
 
         turnComplete = true;
-        enemyController.GetComponent<enemy>().turnsComplete = false;
-        gameState.HideUI();
+        enemyController.GetComponent<Enemy>().turnsComplete = false;
+        GameState.HideUI();
     }
 
     public void RecoilAttack()
     {
         damage = Random.Range(15, 25);
-        enemyController.GetComponent<enemy>().health[target] -= damage * 2;
+        enemyHealth[target] -= damage * 2;
         health -= damage;
         print(this.gameObject.name + " dealt " + damage * 2 + " damage to " + enemies[target].name + " & dealt " + damage + " damage to themself.");
 
         turnComplete = true;
-        enemyController.GetComponent<enemy>().turnsComplete = false;
-        gameState.HideUI();
+        enemyController.GetComponent<Enemy>().turnsComplete = false;
+        GameState.HideUI();
     }
 
     public void WideAttack()
@@ -104,13 +109,13 @@ public class player : MonoBehaviour
         damage = Random.Range(8, 12);
         for (int i = 0; i < enemies.Count; i++)
         {
-            enemyController.GetComponent<enemy>().health[i] -= damage;
+            enemyHealth[i] -= damage;
         }
         print(this.gameObject.name + " dealt " + damage + " damage to all enemies.");
 
         turnComplete = true;
-        enemyController.GetComponent<enemy>().turnsComplete = false;
-        gameState.HideUI();
+        enemyController.GetComponent<Enemy>().turnsComplete = false;
+        GameState.HideUI();
     }
 
     void DeathCheck()

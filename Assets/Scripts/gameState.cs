@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class gameState : MonoBehaviour
+public class GameState : MonoBehaviour
 {
     public static GameObject actions, attacks;
     public GameObject player, actionsPub, attacksPub;
@@ -16,7 +16,7 @@ public class gameState : MonoBehaviour
 
     private void Update()
     {
-        playersTurnComplete = player.GetComponent<player>().turnComplete;
+        playersTurnComplete = player.GetComponent<Player>().turnComplete;
         if (playersTurnComplete)
         {
             HideUI();
