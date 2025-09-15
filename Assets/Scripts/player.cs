@@ -7,6 +7,10 @@ public class Player : MonoBehaviour
 {
     public float health = 100;
     float damage;
+    public float damageMulti = 1;
+    public float accuracy = 0.85f;
+    public float critAccuracy = 0.10f;
+    public float critMulti = 1.5f;
 
     public int target;
     public GameObject enemyController;
@@ -25,10 +29,6 @@ public class Player : MonoBehaviour
         for (int i = 0; i < enemyController.GetComponent<Enemy>().enemies.Length; i++)
         {
             enemies.Add(enemyController.GetComponent<Enemy>().enemies[i]);
-        }
-        for (int i = 0; i < enemyController.GetComponent<Enemy>().health.Count; i++)
-        {
-            enemyHealth.Add(enemyController.GetComponent<Enemy>().health[i]);
         }
         target = 0;
     }
@@ -84,9 +84,10 @@ public class Player : MonoBehaviour
     public void NormalAttack()
     {
         damage = Random.Range(15, 20);
-        enemyHealth[target] -= damage;
+        enemyController.GetComponent<Enemy>().health[target] -= damage * damageMulti;
         print(this.gameObject.name + " dealt " + damage + " damage to " + enemies[target].name + ".");
 
+        damageMulti = 1;
         turnComplete = true;
         enemyController.GetComponent<Enemy>().turnsComplete = false;
         GameState.HideUI();
@@ -95,10 +96,11 @@ public class Player : MonoBehaviour
     public void RecoilAttack()
     {
         damage = Random.Range(15, 25);
-        enemyHealth[target] -= damage * 2;
+        enemyController.GetComponent<Enemy>().health[target] -= (damage * 2) * damageMulti;
         health -= damage;
         print(this.gameObject.name + " dealt " + damage * 2 + " damage to " + enemies[target].name + " & dealt " + damage + " damage to themself.");
 
+        damageMulti = 1;
         turnComplete = true;
         enemyController.GetComponent<Enemy>().turnsComplete = false;
         GameState.HideUI();
@@ -109,10 +111,11 @@ public class Player : MonoBehaviour
         damage = Random.Range(8, 12);
         for (int i = 0; i < enemies.Count; i++)
         {
-            enemyHealth[i] -= damage;
+            enemyController.GetComponent<Enemy>().health[i] -= damage * damageMulti;
         }
         print(this.gameObject.name + " dealt " + damage + " damage to all enemies.");
 
+        damageMulti = 1;
         turnComplete = true;
         enemyController.GetComponent<Enemy>().turnsComplete = false;
         GameState.HideUI();

@@ -12,6 +12,9 @@ public class Enemy : MonoBehaviour
 
     float damage;
     public float damageMulti = 1;
+    public float accuracy = 0.85f;
+    public float critAccuracy = 0.10f;
+    public float critMulti = 1.5f;
 
     public bool turnsComplete = true;
     public GameObject player;
@@ -35,10 +38,20 @@ public class Enemy : MonoBehaviour
         {
             for (int i = 0; i < enemies.Length; i++)
             {
-                damage = Random.Range(10, 15) * damageMulti;
-                player.GetComponent<Player>().health -= damage;
+                if (Random.value <= critAccuracy)
+                {
+                    damageMulti = critMulti;
+                }
 
-                print(enemies[i].name + " dealt " + damage + " damage to the player.");
+                if (Random.value <= accuracy)
+                {
+                    damage = Random.Range(10, 15) * damageMulti;
+                    player.GetComponent<Player>().health -= damage;
+                    print(enemies[i].name + " dealt " + damage + " damage to the player.");
+                } else
+                {
+                    print(enemies[i].name + " missed their attack.");
+                }
             }
 
             damageMulti = 1;
