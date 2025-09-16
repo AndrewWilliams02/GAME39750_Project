@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Enemy : MonoBehaviour
 {
     public List<float> health = new List<float>();
     public GameObject[] enemies = new GameObject[2];
     public Slider[] healthBars = new Slider [2];
+    public TextMeshProUGUI[] healthText = new TextMeshProUGUI[2];
 
     float damage;
     public float damageMulti = 1;
@@ -38,19 +40,24 @@ public class Enemy : MonoBehaviour
         {
             for (int i = 0; i < enemies.Length; i++)
             {
-                if (Random.value <= critAccuracy)
+                if (health[i] > 0)
                 {
-                    damageMulti = critMulti;
-                }
+                    if (Random.value <= critAccuracy)
+                    {
+                        damageMulti *= critMulti;
+                        print(enemies[i].name + "'s attack crit!");
+                    }
 
-                if (Random.value <= accuracy)
-                {
-                    damage = Random.Range(10, 15) * damageMulti;
-                    player.GetComponent<Player>().health -= damage;
-                    print(enemies[i].name + " dealt " + damage + " damage to the player.");
-                } else
-                {
-                    print(enemies[i].name + " missed their attack.");
+                    if (Random.value <= accuracy)
+                    {
+                        damage = Random.Range(10, 15) * damageMulti;
+                        player.GetComponent<Player>().health -= damage;
+                        print(enemies[i].name + " dealt " + damage * damageMulti + " damage to the player.");
+                    }
+                    else
+                    {
+                        print(enemies[i].name + " missed their attack.");
+                    }
                 }
             }
 
@@ -68,6 +75,7 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < health.Count; i++)
         {
             healthBars[i].value = health[i];
+            healthText[i].text = "HP: " + health[i];
         }
     }
 

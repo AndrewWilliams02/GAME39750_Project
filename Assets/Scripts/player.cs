@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
     public float health = 100;
     float damage;
     public float damageMulti = 1;
-    public float accuracy = 0.85f;
-    public float critAccuracy = 0.10f;
-    public float critMulti = 1.5f;
+    public TextMeshProUGUI healthText;
 
     public int target;
     public GameObject enemyController;
@@ -59,6 +58,7 @@ public class Player : MonoBehaviour
     void UpdateHealth()
     {
         healthBar.value = health;
+        healthText.text = "HP: " + health;
     }
 
     void UpdateSelection()
@@ -71,10 +71,19 @@ public class Player : MonoBehaviour
 
     public void Restore()
     {
-        enemyController.GetComponent<Enemy>().damageMulti = 0.5f;
+        
+        enemyController.GetComponent<Enemy>().damageMulti *= 0.5f;
         damage = Random.Range(10, 35);
-        health += damage;
-        print(this.gameObject.name + " restored themself, reducing damage taken by 50% this turn and healing " + damage + " HP.");
+        if (health < 100)
+        {
+            health += damage;
+            if (health > 100) { health = 100; }
+            print(this.gameObject.name + " restored themself, reducing damage taken by 50% this turn and healing " + damage + " HP.");
+        }
+        else
+        {
+            print(this.gameObject.name + " restored themself at max health, only reducing damage taken by 50% this turn.");
+        }
 
         turnComplete = true;
         enemyController.GetComponent<Enemy>().turnsComplete = false;
@@ -83,9 +92,14 @@ public class Player : MonoBehaviour
 
     public void NormalAttack()
     {
+        if (Random.value <= 0.15f)
+        {
+            damageMulti = 1.5f;
+        }
+
         damage = Random.Range(15, 20);
         enemyController.GetComponent<Enemy>().health[target] -= damage * damageMulti;
-        print(this.gameObject.name + " dealt " + damage + " damage to " + enemies[target].name + ".");
+        print(this.gameObject.name + " dealt " + damage * damageMulti + " damage to " + enemies[target].name + ".");
 
         damageMulti = 1;
         turnComplete = true;
@@ -95,10 +109,15 @@ public class Player : MonoBehaviour
 
     public void RecoilAttack()
     {
+        if (Random.value <= 0.20f)
+        {
+            damageMulti = 1.5f;
+        }
+
         damage = Random.Range(15, 25);
         enemyController.GetComponent<Enemy>().health[target] -= (damage * 2) * damageMulti;
         health -= damage;
-        print(this.gameObject.name + " dealt " + damage * 2 + " damage to " + enemies[target].name + " & dealt " + damage + " damage to themself.");
+        print(this.gameObject.name + " dealt " + (damage * 2) * damageMulti + " damage to " + enemies[target].name + " & dealt " + damage + " damage to themself.");
 
         damageMulti = 1;
         turnComplete = true;
@@ -108,12 +127,25 @@ public class Player : MonoBehaviour
 
     public void WideAttack()
     {
-        damage = Random.Range(8, 12);
-        for (int i = 0; i < enemies.Count; i++)
+        if (Random.value <= 0.9f)
         {
-            enemyController.GetComponent<Enemy>().health[i] -= damage * damageMulti;
+            damage = Random.Range(8, 12);
+            if (Random.value <= 0.15f)
+            {
+                damageMulti = 1.5f;
+                print(this.gameObject.name + "'s attack crit!");
+            }
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                enemyController.GetComponent<Enemy>().health[i] -= damage * damageMulti;
+            }
+
+            print(this.gameObject.name + " dealt " + damage * damageMulti + " damage to all enemies.");
+        } else
+        {
+            print(this.gameObject.name + " missed their attack.");
         }
-        print(this.gameObject.name + " dealt " + damage + " damage to all enemies.");
 
         damageMulti = 1;
         turnComplete = true;
